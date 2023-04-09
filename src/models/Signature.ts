@@ -1,13 +1,16 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
 
 @Entity()
-export class Signature {
+export class Signature extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
+    id: string
+
+    @Column('varchar')
     code: string
 
-    @Column()
-    valor: number
+    @Column('float')
+    price: number
 
 
 

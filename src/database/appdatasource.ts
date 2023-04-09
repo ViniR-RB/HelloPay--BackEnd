@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import { Signature } from "../models/Signature";
 import Configuration from "../utils/configurations";
-export const conectDb = new DataSource({
+export const conectDb: DataSource = new DataSource({
     type: 'postgres',
     host: 'localhost',
     port: Configuration.DbPort,

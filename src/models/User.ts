@@ -26,6 +26,10 @@ export class User extends BaseEntity {
         unique: true
     })
     email: string
+    @Column({
+        default: false
+    })
+    isFirstAcess: boolean
 
     @Column({
         nullable: true

@@ -9,4 +9,6 @@ export default abstract class Configuration {
     static Username: string = process.env.USERNAME!
     static Password: string = process.env.PASSWORD!
     static Database: string = process.env.DATABASE!
+    static Secretkey: string = process.env.SECRETKEY!
+    static SaltRound: number = parseInt(process.env.SaltRound!)
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Signature } from "../models/Signature";
 class SignatureController {
-
+    
     async index(req: Request, res: Response) {
         try {
             const carts = await Signature.find();

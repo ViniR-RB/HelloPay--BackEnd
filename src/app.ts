@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from 'express';
+import routesAuthentication from "./routes/authentication";
 import routesSignature from "./routes/signatures";
 class App {
     server: any;
@@ -16,6 +17,7 @@ class App {
 
     routes() {
         this.server.use(routesSignature);
+        this.server.use(routesAuthentication)
     }
 }
 

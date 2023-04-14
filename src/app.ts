@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from 'express';
+import './locator';
 import routesAuthentication from "./routes/authentication";
 import routesSignature from "./routes/signatures";
 class App {

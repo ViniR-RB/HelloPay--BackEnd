@@ -1,22 +1,23 @@
-import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
-import "reflect-metadata";
 
 import { inject, injectable } from "tsyringe";
 import { User } from "../models/User";
 import EncryptionService from "../service/encryption/EncryptionService";
-import Configuration from "../utils/configurations";
-import { INJECTS } from "../utils/configurations/binds";
 
 export interface Authentication {
   login(req: Request, res: Response): any;
   signUp(req: Request, res: Response): any;
 }
 
-
 @injectable()
 export default class AuthenticationImpl implements Authentication {
-  constructor(@inject(INJECTS.EncryptionService) private encryptionService: EncryptionService ){}
+  private encryptionService: EncryptionService
+  constructor(
+    @inject('EncryptionService')
+    encryptionService: EncryptionService
+  ) {
+    this.encryptionService = encryptionService
+   }
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
     const user = await User.findOneBy({
@@ -27,7 +28,10 @@ export default class AuthenticationImpl implements Authentication {
         .status(404)
         .json({ error: "Usuario não encontrado ou senha incorreta" });
     }
-    const compare = await bcryptjs.compare(password, user.password);
+    const compare = await this.encryptionService.compare(
+      password,
+      user.password
+    );
     if (!compare) {
       return res
         .status(404)
@@ -52,10 +56,7 @@ export default class AuthenticationImpl implements Authentication {
         return res.status(404).json({ error: "Email em Uso" });
       }
 
-      const passwordHash = await bcryptjs.hash(
-        password,
-        Configuration.SaltRound
-      );
+      const passwordHash = await this.encryptionService.hash(password);
       const user = User.create({
         first_name,
         last_name,

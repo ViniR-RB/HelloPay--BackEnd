@@ -1,13 +1,9 @@
 import { container } from "tsyringe";
 import EncryptionService, {
-    EncryptionServiceImpl,
+  EncryptionServiceImpl,
 } from "../service/encryption/EncryptionService";
-import { INJECTS } from "../utils/configurations/binds";
 
-export const setupDependencies = () => {
-    
-    container.registerSingleton<EncryptionService>(
-        INJECTS.EncryptionService,
-        EncryptionServiceImpl
-      );
-}
+container.registerSingleton<EncryptionService>(
+  "EncryptionService",
+  EncryptionServiceImpl
+);

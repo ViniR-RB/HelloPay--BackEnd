@@ -1,9 +1,9 @@
+import * as bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
-
-import { inject, injectable } from "tsyringe";
+import jwt from "jsonwebtoken";
+import { injectable } from "tsyringe";
 import { User } from "../models/User";
-import EncryptionService from "../service/encryption/EncryptionService";
-
+import Configuration from "../utils/configurations";
 export interface Authentication {
   login(req: Request, res: Response): any;
   signUp(req: Request, res: Response): any;
@@ -11,13 +11,7 @@ export interface Authentication {
 
 @injectable()
 export default class AuthenticationImpl implements Authentication {
-  private encryptionService: EncryptionService
-  constructor(
-    @inject('EncryptionService')
-    encryptionService: EncryptionService
-  ) {
-    this.encryptionService = encryptionService
-   }
+  constructor() {}
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
     const user = await User.findOneBy({
@@ -28,16 +22,39 @@ export default class AuthenticationImpl implements Authentication {
         .status(404)
         .json({ error: "Usuario não encontrado ou senha incorreta" });
     }
-    const compare = await this.encryptionService.compare(
-      password,
-      user.password
-    );
+    const compare = await bcryptjs.compare(password, user.password);
     if (!compare) {
       return res
         .status(404)
         .json({ error: "Usuario não encontrado ou senha incorreta" });
     }
-    return res.status(200).json(user);
+    const {
+      first_name,
+      last_name,
+      phone_number,
+      avatar,
+      zip_code,
+      state,
+      cyte,
+    } = user;
+    const refreshToken = jwt.sign({ email }, "chave-secret", {
+      expiresIn: 2592000,
+    });
+    const acessToken = jwt.sign(
+      {
+        first_name,
+        last_name,
+        phone_number,
+        email,
+        avatar,
+        zip_code,
+        state,
+        cyte,
+      },
+      "chave-secret",
+      { expiresIn: "1h" }
+    );
+    return res.status(200).json({ refreshToken, acessToken });
   }
   async signUp(req: Request, res: Response) {
     try {
@@ -56,7 +73,10 @@ export default class AuthenticationImpl implements Authentication {
         return res.status(404).json({ error: "Email em Uso" });
       }
 
-      const passwordHash = await this.encryptionService.hash(password);
+      const passwordHash = await bcryptjs.hash(
+        password,
+        Configuration.SaltRound
+      );
       const user = User.create({
         first_name,
         last_name,
@@ -69,10 +89,27 @@ export default class AuthenticationImpl implements Authentication {
       });
       user.password = passwordHash;
       user.save();
+      user.password = "";
       console.log(user);
-      return res.status(201).json(user);
+      const refreshToken = jwt.sign({ email }, "chave-secret", {
+        expiresIn: 2592000,
+      });
+      const acessToken = jwt.sign(
+        {
+          first_name,
+          last_name,
+          phone_number,
+          email,
+          avatar,
+          zip_code,
+          state,
+          cyte,
+        },
+        "chave-secret",
+        { expiresIn: "1h" }
+      );
+      return res.status(201).json({ acessToken, refreshToken });
     } catch (e) {
-      console.log(e);
       console.log(e);
       return res.status(500).send(e);
     }

@@ -1,10 +1,9 @@
 import cors from "cors";
-import express from 'express';
-import './locator';
+import express, { Express } from 'express';
 import routesAuthentication from "./routes/authentication";
 import routesSignature from "./routes/signatures";
 class App {
-    server: any;
+    server: Express;
 
     constructor() {
         this.server = express();
@@ -22,4 +21,4 @@ class App {
     }
 }
 
-export default new App().server;
+export default App

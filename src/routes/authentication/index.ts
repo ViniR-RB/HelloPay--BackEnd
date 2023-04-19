@@ -4,7 +4,7 @@ import AuthenticationImpl, { Authentication } from "../../controller/Authenticat
 
 const routesAuthentication = Router();
 const authentication = container.resolve<Authentication>(AuthenticationImpl);
-/* const authentication = new AuthenticationImpl(); */
+
 
 routesAuthentication.post("/login", authentication.login);
 routesAuthentication.post("/signup", authentication.signUp);

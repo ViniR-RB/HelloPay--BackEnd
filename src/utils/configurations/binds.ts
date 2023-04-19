@@ -1,6 +1,6 @@
 
 
 export enum  INJECTS  {
-  EncryptionService = "EncryptionService"
+  EncryptionService = 'EncryptionService'
 };
 
